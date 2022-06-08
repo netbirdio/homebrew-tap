@@ -7,11 +7,11 @@ cask "netbird-ui" do
 
   if Hardware::CPU.intel?
       url "https://github.com/netbirdio/netbird/releases/download/v0.6.4/netbird-ui_0.6.4_darwin_amd64_signed.zip"
-      sha256 "fe4cf46cb8c3aac76439259ca1db5e9c61e75b7596231f5601015f9739b0fcb9"
+      sha256 "1830cd075fadd31cc9a24a327478b34f68fed51555ceabf9fdeed2d0eec7e383"
       app "netbird_ui_darwin_amd64", target: "Netbird UI.app"
   else
       url "https://github.com/netbirdio/netbird/releases/download/v0.6.4/netbird-ui_0.6.4_darwin_arm64_signed.zip"
-      sha256 "c1c9924657eac11175654f70525e605904f98c44685b048adf9d62a96c53f022"
+      sha256 "86b88b18065bd2968fb77b31fa79df3ba9b64af5c75ffeb77f906e2aade2a077"
       app "netbird_ui_darwin_arm64", target: "Netbird UI.app"
   end
 
