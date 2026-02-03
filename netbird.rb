@@ -5,21 +5,21 @@
 class Netbird < Formula
   desc "Netbird project."
   homepage "https://netbird.io/"
-  version "0.64.4"
+  version "0.64.5"
   license "BSD3"
 
   on_macos do
     on_intel do
-      url "https://github.com/netbirdio/netbird/releases/download/v0.64.4/netbird_0.64.4_darwin_amd64.tar.gz", using: CurlDownloadStrategy
-      sha256 "c81c59acf45182dedf2a23e61dcd7aae2935c61d96514ac03549e0dba65cce13"
+      url "https://github.com/netbirdio/netbird/releases/download/v0.64.5/netbird_0.64.5_darwin_amd64.tar.gz", using: CurlDownloadStrategy
+      sha256 "3eb5925a3afa26af9b6b1baea115fbd400613b51079a2011e32835ac87a75cf4"
 
       def install
         bin.install "netbird"
       end
     end
     on_arm do
-      url "https://github.com/netbirdio/netbird/releases/download/v0.64.4/netbird_0.64.4_darwin_arm64.tar.gz", using: CurlDownloadStrategy
-      sha256 "b3dd4fef080abae4114859cad36e826088a4d596324ccb1c820c3a5edff96a6b"
+      url "https://github.com/netbirdio/netbird/releases/download/v0.64.5/netbird_0.64.5_darwin_arm64.tar.gz", using: CurlDownloadStrategy
+      sha256 "f6a8117b3870b41c289a687a4b9e0e39aa6d5f886d3fc6cad51f1d0821a3ad25"
 
       def install
         bin.install "netbird"
@@ -30,8 +30,8 @@ class Netbird < Formula
   on_linux do
     on_intel do
       if Hardware::CPU.is_64_bit?
-        url "https://github.com/netbirdio/netbird/releases/download/v0.64.4/netbird_0.64.4_linux_amd64.tar.gz", using: CurlDownloadStrategy
-        sha256 "5758e6396f8d1230558611300902d12362b95f380a93bcf0b8e72e313dce7987"
+        url "https://github.com/netbirdio/netbird/releases/download/v0.64.5/netbird_0.64.5_linux_amd64.tar.gz", using: CurlDownloadStrategy
+        sha256 "661732289c5ceb0e2742a0bc0a06834f84c0656662fae55983937538f1774c1b"
 
         def install
           bin.install "netbird"
@@ -40,8 +40,8 @@ class Netbird < Formula
     end
     on_arm do
       if !Hardware::CPU.is_64_bit?
-        url "https://github.com/netbirdio/netbird/releases/download/v0.64.4/netbird_0.64.4_linux_armv6.tar.gz", using: CurlDownloadStrategy
-        sha256 "b9dbfc6e4705ae17feaabe3a942750cb8ee8d1c190738349190fc1341843c2d6"
+        url "https://github.com/netbirdio/netbird/releases/download/v0.64.5/netbird_0.64.5_linux_armv6.tar.gz", using: CurlDownloadStrategy
+        sha256 "422cd803c52ebecc5fc3f1769c443d25b0efdf84e7796760cfa0b4295c55f1a5"
 
         def install
           bin.install "netbird"
@@ -50,8 +50,8 @@ class Netbird < Formula
     end
     on_arm do
       if Hardware::CPU.is_64_bit?
-        url "https://github.com/netbirdio/netbird/releases/download/v0.64.4/netbird_0.64.4_linux_arm64.tar.gz", using: CurlDownloadStrategy
-        sha256 "c0ae049f07bf7e5264d4d9c188449c7256ceac3d81442e4bc745c9ac21e17650"
+        url "https://github.com/netbirdio/netbird/releases/download/v0.64.5/netbird_0.64.5_linux_arm64.tar.gz", using: CurlDownloadStrategy
+        sha256 "5a697616093d275b5770e7530a8e1c69b25df8a325362d08255fd069857f5794"
 
         def install
           bin.install "netbird"
