@@ -1,6 +1,3 @@
-
-
-
 # Netbird's UI Client Cask Formula
 cask "netbird-ui" do
   version "0.64.5"
@@ -29,8 +26,12 @@ cask "netbird-ui" do
   end
 
   uninstall_preflight do
-    system_command "#{appdir}/Netbird UI.app/uninstaller.sh",
-                   sudo: false
+    uninstaller = "#{appdir}/Netbird UI.app/uninstaller.sh"
+
+    if File.exist?(uninstaller)
+      system_command uninstaller,
+                     sudo: false
+    end
   end
 
   name "Netbird UI"
