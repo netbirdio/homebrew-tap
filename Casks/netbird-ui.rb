@@ -3,15 +3,15 @@
 
 # Netbird's UI Client Cask Formula
 cask "netbird-ui" do
-  version "0.65.2"
+  version "0.65.3"
 
   if Hardware::CPU.intel?
-      url "https://github.com/netbirdio/netbird/releases/download/v0.65.2/netbird-ui_0.65.2_darwin_amd64_signed.zip"
-      sha256 "0f8fd978dcb43662d57da8d4514e8c7ff60feb731599c0f8c145bf5d0ec2978d"
+      url "https://github.com/netbirdio/netbird/releases/download/v0.65.3/netbird-ui_0.65.3_darwin_amd64_signed.zip"
+      sha256 "354d8144b2ae0d361c9bd1d66c8a60503693fed458236701580a7b37fb9edd07"
       app "netbird_ui_darwin", target: "Netbird UI.app"
   else
-      url "https://github.com/netbirdio/netbird/releases/download/v0.65.2/netbird-ui_0.65.2_darwin_arm64_signed.zip"
-      sha256 "67c93e4d2401ca24ce2dc1616ba105ef607e4791b81ca46a666081be5f804525"
+      url "https://github.com/netbirdio/netbird/releases/download/v0.65.3/netbird-ui_0.65.3_darwin_arm64_signed.zip"
+      sha256 "16de5295aed29258538ea650c42b904aafbf0f60b8404ef931ff8a5d05dc5ed6"
       app "netbird_ui_darwin", target: "Netbird UI.app"
   end
 
