@@ -51,6 +51,23 @@ class Netbird < Formula
     end
   end
 
+  def uninstall_post
+    system "launchctl", "bootout", "system/netbird"
+    rm_f "/Library/LaunchDaemons/netbird.plist"
+  rescue
+    # ignore errors if launchctl is unavailable or service is already stopped
+  end
+
+  def caveats
+    <<~EOS
+      If you installed the NetBird service via `sudo netbird service install`,
+      stop and uninstall it before upgrading or removing this formula:
+
+        sudo netbird service stop
+        sudo netbird service uninstall
+    EOS
+  end
+
   test do
     system "#{bin}/netbird version"
   end
