@@ -3,15 +3,15 @@
 
 # Netbird's UI Client Cask Formula
 cask "netbird-ui" do
-  version "0.75.1"
+  version "0.76.0"
 
   if Hardware::CPU.intel?
-      url "https://github.com/netbirdio/netbird/releases/download/v0.75.1/netbird-ui_0.75.1_darwin_amd64_signed.zip"
-      sha256 "65f1a90394350f4867551295ebce526d7a8d7698d86cb33922d6a9a830cb31cb"
+      url "https://github.com/netbirdio/netbird/releases/download/v0.76.0/netbird-ui_0.76.0_darwin_amd64_signed.zip"
+      sha256 "045348e2dd5bcfec71b58d2930e98586b221aff60a5fbba56edf5dc090e6b083"
       app "netbird_ui_darwin", target: "Netbird UI.app"
   else
-      url "https://github.com/netbirdio/netbird/releases/download/v0.75.1/netbird-ui_0.75.1_darwin_arm64_signed.zip"
-      sha256 "975188ced8b5d0c214bd9352be9a7318480986f9af3596c75f4e8a1e3932d44b"
+      url "https://github.com/netbirdio/netbird/releases/download/v0.76.0/netbird-ui_0.76.0_darwin_arm64_signed.zip"
+      sha256 "103ef8c65eb5ad21ca94e4cb982eb2e1339c4e01a9ee0a25372f4f12027ce932"
       app "netbird_ui_darwin", target: "Netbird UI.app"
   end
 
@@ -29,13 +29,8 @@ cask "netbird-ui" do
   end
 
   uninstall_preflight do
-    system_command "/bin/sh",
-                   args: ["-c", <<~CMD],
-                     launchctl bootout system/netbird 2>/dev/null || \
-                       launchctl unload /Library/LaunchDaemons/netbird.plist 2>/dev/null || true
-                     rm -f /Library/LaunchDaemons/netbird.plist
-                   CMD
-                   sudo: true
+    system_command "#{appdir}/Netbird UI.app/uninstaller.sh",
+                   sudo: false
   end
 
   name "Netbird UI"
