@@ -51,6 +51,40 @@ class Netbird < Formula
     end
   end
 
+  # `brew upgrade` swaps the binary out from under the running daemon:
+  # launchd (or systemd) keeps the old process alive,
+  # so NetBird goes on serving the previous version until something restarts it.
+  # Restart it here, but only when it is already running,
+  # so an upgrade never starts a daemon the user deliberately stopped.
+  def post_install
+    return unless daemon_running?
+
+    ohai "Restarting the NetBird service"
+    # `sudo -n` first, so a still-cached credential means no prompt at all.
+    return if restart_daemon(sudo_args: ["-n"], err: File::NULL)
+    return if $stdin.tty? && restart_daemon
+
+    opoo <<~EOS
+      The NetBird service is still running the previous version. Restart it with:
+        sudo netbird service restart
+    EOS
+  end
+
+  # The daemon runs as root, so the process table is the only place its state
+  # can be read from without asking for a password ("netbird service status"
+  # and launchctl both report a root daemon as stopped when asked by a plain
+  # user). The leading slash keeps shell command lines that merely mention
+  # "netbird service run" from matching.
+  def daemon_running?
+    Kernel.system("pgrep", "-f", "/netbird service run", out: File::NULL, err: File::NULL)
+  end
+
+  # Not `Formula#system`: That one sends the child's output to a log file,
+  # which would swallow the sudo password prompt, and raises on a non-zero exit.
+  def restart_daemon(sudo_args: [], **options)
+    Kernel.system("sudo", *sudo_args, "#{opt_bin}/netbird", "service", "restart", **options)
+  end
+
   test do
     system "#{bin}/netbird version"
   end
