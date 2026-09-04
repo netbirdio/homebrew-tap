@@ -60,6 +60,8 @@ class Netbird < Formula
   # NOTE: local addition. GoReleaser regenerates this file on every release, so
   # this block has to live in `brews[].post_install` in netbird's .goreleaser.yaml
   # to survive: https://github.com/netbirdio/netbird/pull/7394
+  # Runs on reinstall as well as upgrade -- intended: either way the binary
+  # under the daemon was just replaced, so a running daemon is equally stale.
   def post_install
     return unless daemon_running?
 
