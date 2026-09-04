@@ -51,6 +51,86 @@ class Netbird < Formula
     end
   end
 
+  # `brew upgrade` swaps the binary out from under the running daemon: launchd
+  # (or systemd) keeps the old process alive, so NetBird goes on serving the
+  # previous version until something restarts it. Restart it here -- but only
+  # when it is already running, so an upgrade never starts a daemon the user
+  # deliberately stopped.
+  #
+  # NOTE: local addition. GoReleaser regenerates this file on every release, so
+  # this block has to live in `brews[].post_install` in netbird's .goreleaser.yaml
+  # to survive: https://github.com/netbirdio/netbird/pull/7394
+  # Runs on reinstall as well as upgrade -- intended: either way the binary
+  # under the daemon was just replaced, so a running daemon is equally stale.
+  def post_install
+    running = daemon_pids
+    return if running.empty?
+
+    ohai "Restarting the NetBird service"
+    # `sudo -n` only: brew resets the sudo timestamp at startup, so this
+    # succeeds just for NOPASSWD setups -- and an interactive prompt cannot be
+    # offered here, because the post-install sandbox runs this code in a
+    # pseudoterminal, where $stdin.tty? is true even for a headless
+    # `brew upgrade` and a prompt would stall it until sudo times out.
+    #
+    # Success is judged by outcome, not by reconfigure's exit status: a fresh
+    # daemon process must be running afterwards and the one seen above must be
+    # gone. Reconfigure only manages the default service name, and a daemon
+    # installed under a custom name (-s) is indistinguishable by its command
+    # line -- if a stale default definition let reconfigure "succeed" against
+    # the wrong service, the old process would still be running; if the new
+    # daemon died on startup, none would be. Both print the instructions.
+    if default_service? && restart_daemon
+      replacement = daemon_pids
+      return if !replacement.empty? && !replacement.intersect?(running)
+    end
+
+    opoo <<~EOS
+      The NetBird service is still running the previous version. Restart it with:
+        sudo #{opt_bin}/netbird service reconfigure
+    EOS
+  end
+
+  # The daemon runs as root, so the process table is the only place its state
+  # can be read from without asking for a password ("netbird service status"
+  # and launchctl both report a root daemon as stopped when asked by a plain
+  # user). "netbird service install" records the executable path the installing
+  # process resolved to: the stable brew-linked path on macOS, but the
+  # versioned Cellar path on Linux (/proc/self/exe resolves symlinks), so the
+  # anchored pattern accepts the stable, opt, and Cellar spellings. A plain
+  # group instead of "(?:" because pgrep matches POSIX ERE.
+  def daemon_pids
+    pattern = "^#{Regexp.escape(HOMEBREW_PREFIX)}/(opt/netbird/|Cellar/netbird/[^/]+/)?bin/netbird service run"
+    IO.popen(["pgrep", "-f", pattern], err: File::NULL, &:read).split
+  rescue Errno::ENOENT
+    # No pgrep, no way to know whether a daemon is running: stay silent
+    # rather than warn every system whose daemon is simply stopped.
+    []
+  end
+
+  # Reconfigure needs the default service definition: it only manages the
+  # default service name, and against a missing definition it fails before
+  # touching anything. Skipping the doomed sudo attempt keeps a stale stopped
+  # default service from being rewritten as a side effect.
+  def default_service?
+    File.exist?(OS.mac? ? "/Library/LaunchDaemons/netbird.plist" : "/etc/systemd/system/netbird.service")
+  end
+
+  # `netbird service reconfigure` rewrites the service definition with the
+  # just-upgraded binary before starting it again -- a plain restart re-execs
+  # the path recorded at install time, which on Linux is the previous
+  # version's Cellar directory. Reconfigure re-checks the running state itself
+  # and only starts the service again when it found it running. That re-check
+  # is not atomic with its final start, but closing the remaining
+  # milliseconds-wide window needs the atomic service-manager verbs
+  # (systemctl try-restart, launchctl kill), which re-exec the recorded --
+  # on Linux stale -- executable path instead of the new binary; upstream
+  # semantics win here.
+  def restart_daemon
+    Kernel.system("sudo", "-n", "#{opt_bin}/netbird", "service", "reconfigure",
+                  out: File::NULL, err: File::NULL)
+  end
+
   test do
     system "#{bin}/netbird version"
   end
