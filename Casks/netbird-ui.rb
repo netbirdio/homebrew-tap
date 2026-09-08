@@ -17,18 +17,18 @@ cask "netbird-ui" do
 
   depends_on formula: "netbird"
 
-  postflight do
+  postflight_steps do
     set_permissions "/Applications/Netbird UI.app/installer.sh", '0755'
     set_permissions "/Applications/Netbird UI.app/uninstaller.sh", '0755'
   end
 
-  postflight do
+  postflight_steps do
     system_command "#{appdir}/Netbird UI.app/installer.sh",
                    args: ["#{version}"],
                    sudo: true
   end
 
-  uninstall_preflight do
+  uninstall_preflight_steps do
     system_command "/bin/sh",
                    args: ["-c", <<~CMD],
                      launchctl bootout system/netbird 2>/dev/null || \
