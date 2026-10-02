@@ -17,25 +17,14 @@ cask "netbird-ui" do
 
   depends_on formula: "netbird"
 
-  postflight do
-    set_permissions "/Applications/Netbird UI.app/installer.sh", '0755'
-    set_permissions "/Applications/Netbird UI.app/uninstaller.sh", '0755'
+  postflight_steps do
+    run "/bin/chmod", args: ["0755", "{{appdir}}/Netbird UI.app/installer.sh", "{{appdir}}/Netbird UI.app/uninstaller.sh"]
+    run "{{appdir}}/Netbird UI.app/installer.sh", args: ["#{version}"], sudo: true
   end
 
-  postflight do
-    system_command "#{appdir}/Netbird UI.app/installer.sh",
-                   args: ["#{version}"],
-                   sudo: true
-  end
-
-  uninstall_preflight do
-    system_command "/bin/sh",
-                   args: ["-c", <<~CMD],
-                     launchctl bootout system/netbird 2>/dev/null || \
-                       launchctl unload /Library/LaunchDaemons/netbird.plist 2>/dev/null || true
-                     rm -f /Library/LaunchDaemons/netbird.plist
-                   CMD
-                   sudo: true
+  uninstall_preflight_steps do
+    run "/bin/launchctl", args: ["bootout", "system/netbird"], sudo: true, must_succeed: false
+    run "/bin/rm", args: ["-f", "/Library/LaunchDaemons/netbird.plist"], sudo: true
   end
 
   name "Netbird UI"
